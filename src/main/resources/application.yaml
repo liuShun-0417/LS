@@ -4,9 +4,13 @@ spring:
   config:
     import: optional:file:./application-local.yaml
   datasource:
-    url: jdbc:mysql://118.25.25.164:3306/demo?allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=UTF-8&connectionTimeZone=Asia/Shanghai&connectTimeout=5000&socketTimeout=10000
-    username: stu
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:demo}?allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=UTF-8&connectionTimeZone=Asia/Shanghai&connectTimeout=5000&socketTimeout=10000
+    username: ${DB_USERNAME:stu}
     password: ${DB_PASSWORD:}
+  flyway:
+    baseline-on-migrate: true
+    baseline-version: 0
+    locations: classpath:db/migration
 server:
   port: 8080
 sa-token:
@@ -19,7 +23,7 @@ sa-token:
   is-read-param: false
 
 ai:
-  base-url: ${AI_BASE_URL:https://gpt.wenmeng.online/v1}
+  base-url: ${AI_BASE_URL:}
   api-key: ${AI_API_KEY:}
   model: ${AI_MODEL:gpt-5.6-luna}
   max-output-tokens: ${AI_MAX_OUTPUT_TOKENS:8192}

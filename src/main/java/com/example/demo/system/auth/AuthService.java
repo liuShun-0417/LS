@@ -3,30 +3,38 @@ package com.example.demo.system.auth;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.example.demo.system.dto.CreateUserRequest;
 import com.example.demo.system.dto.UserResponse;
 import com.example.demo.system.entity.User;
 import com.example.demo.system.mapper.UserMapper;
+import com.example.demo.system.rbac.RbacService;
+import org.redisson.api.RRateLimiter;
+import org.redisson.api.RateIntervalUnit;
+import org.redisson.api.RateType;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-
 @Service
 public class AuthService {
     private final UserMapper mapper;
-    private final com.example.demo.system.rbac.RbacService rbac;
+    private final RbacService rbac;
+    private final RedissonClient redisson;
 
-    public AuthService(UserMapper mapper, com.example.demo.system.rbac.RbacService rbac) {
+    @Value("${login.rate-limit-per-minute:5}")
+    private int loginRateLimitPerMinute;
+
+    public AuthService(UserMapper mapper, RbacService rbac, RedissonClient redisson) {
         this.mapper = mapper;
         this.rbac = rbac;
+        this.redisson = redisson;
     }
 
     @org.springframework.transaction.annotation.Transactional
     public AuthResponse register(CreateUserRequest request) {
-        if(request.roleId()!=null) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"注册不能指定角色");
+        if (request.roleId() != null) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "注册不能指定角色");
         String account = request.account().trim();
         if (mapper.selectCount(new LambdaQueryWrapper<User>().eq(User::getAccount, account)) > 0) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "账号已存在");
@@ -36,18 +44,21 @@ public class AuthService {
         user.setAccount(account);
         user.setPasswd(PasswordCodec.hash(request.passwd()));
         mapper.insert(user);
-        rbac.bind(user.getId(),null);
+        rbac.bind(user.getId(), null);
         return signedIn(user);
     }
 
     public AuthResponse login(LoginRequest request) {
-        User user = mapper.selectOne(new LambdaQueryWrapper<User>()
-                .eq(User::getAccount, request.account().trim()), true);
+        String account = request.account().trim();
+        checkLoginRate(account);
+        User user = mapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getAccount, account), true);
         if (user == null) {
             throw invalidCredentials();
         }
         if (!PasswordCodec.matches(request.passwd(), user.getPasswd())) {
-            if (!PasswordCodec.matchesLegacy(request.passwd(), user.getPasswd())) throw invalidCredentials();
+            throw invalidCredentials();
+        }
+        if (PasswordCodec.isLegacy(user.getPasswd())) {
             int upgraded = mapper.update(null, new LambdaUpdateWrapper<User>()
                     .eq(User::getId, user.getId())
                     .eq(User::getPasswd, user.getPasswd())
@@ -67,14 +78,29 @@ public class AuthService {
         return toResponse(user);
     }
 
+    private void checkLoginRate(String account) {
+        try {
+            RRateLimiter limiter = redisson.getRateLimiter("login:rate:" + account);
+            limiter.trySetRate(RateType.OVERALL, loginRateLimitPerMinute, 1, RateIntervalUnit.MINUTES);
+            if (!limiter.tryAcquire()) {
+                throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "登录尝试过于频繁，请稍后再试");
+            }
+        } catch (ResponseStatusException e) {
+            throw e;
+        } catch (Exception ignored) {
+            // Redis 限流不可用时放行，避免影响登录主流程。
+        }
+    }
+
     private AuthResponse signedIn(User user) {
         StpUtil.login(user.getId());
         return new AuthResponse(StpUtil.getTokenName(), StpUtil.getTokenValue(), toResponse(user));
     }
 
     private UserResponse toResponse(User user) {
-        var role=rbac.userRole(user.getId());
-        return new UserResponse(user.getId(), user.getName(), user.getAccount(),role==null?null:role.getId(),role==null?null:role.getName());
+        var role = rbac.userRole(user.getId());
+        return new UserResponse(user.getId(), user.getName(), user.getAccount(),
+                role == null ? null : role.getId(), role == null ? null : role.getName());
     }
 
     private static ResponseStatusException invalidCredentials() {

@@ -1,6 +1,6 @@
 ﻿# AI 消息对话（SSE）
 
-登录后访问 `/`，使用 **GPT-5.6 Luna** 进行真实 AI 对话。浏览器只调用本站 `/api/messages`，后端通过 `https://gpt.wenmeng.online/v1/responses` 请求模型，将上游文本增量立即转成 SSE；没有模拟逐字延时，也不回传内部推理内容。
+登录后访问 `/`，使用 **GPT-5.6 Luna** 进行真实 AI 对话。浏览器只调用本站 `/api/messages`，后端通过 `AI_BASE_URL`（OpenAI 兼容网关）+ `/responses` 请求模型，将上游文本增量立即转成 SSE；没有模拟逐字延时，也不回传内部推理内容。
 
 ## 配置
 
@@ -9,7 +9,7 @@
 | 环境变量 | 默认值 | 说明 |
 | --- | --- | --- |
 | `AI_API_KEY` | 空 | 必填；缺少时返回 503 |
-| `AI_BASE_URL` | `https://gpt.wenmeng.online/v1` | 后端固定配置，不接受客户端指定地址 |
+| `AI_BASE_URL` | 空（需显式配置） | OpenAI 兼容网关地址，例如 `https://api.openai.com/v1` |
 | `AI_MODEL` | `gpt-5.6-luna` | 模型标识 |
 | `AI_MAX_OUTPUT_TOKENS` | `8192` | 单次生成预算，含模型推理；可配置 256～128000 |
 | `AI_TIMEOUT_SECONDS` | `180` | 单次请求总时限；可配置 10～600 秒 |

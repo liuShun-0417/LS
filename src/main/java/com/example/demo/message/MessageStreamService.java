@@ -35,7 +35,7 @@ public class MessageStreamService {
     }
 
     public SseEmitter reply(MessageController.MessageRequest request) {
-        if (properties.getApiKey().isBlank()) {
+        if (properties.getApiKey().isBlank() || properties.getBaseUrl().isBlank()) {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "AI 服务尚未配置，请联系管理员");
         }
         List<Map<String, String>> input = buildInput(request);

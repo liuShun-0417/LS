@@ -13,7 +13,7 @@
 - `(group_id, sender_id, client_message_id)` 唯一约束保证重试不重复保存。同一编号不同正文返回 409。
 - 所有查询均按群组和成员权限过滤，无法通过修改游标读取更早的受限消息。客户端传入的发送者身份不被采用。
 
-启动时执行 `src/main/resources/db/chat-schema.sql`，只创建不存在的表。数据库需要 CREATE TABLE 权限，也可手工执行 SQL 并配置 `chat.initialize-schema=false`。消息时间由服务端接收时生成，保存时保留该时间，响应为服务端本地日期时间字符串。
+启动时由 Flyway 执行 `db/migration/V2__chat_schema.sql`，只创建不存在的表。数据库需要 CREATE TABLE 权限。消息时间由服务端接收时生成，保存时保留该时间，响应为服务端本地日期时间字符串。
 
 ## HTTP 接口
 

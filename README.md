@@ -18,7 +18,7 @@
 
 项目使用 MyBatis-Plus 3.5.17（Spring Boot 4 Starter、分页插件）和 MySQL Connector/J，数据库操作通过 `UserMapper` 完成，无需手写 JDBC 查询。`system/entity/User.java` 对应 `user` 表，`system/config/MybatisPlusConfig.java` 配置每页 20 条所需的分页拦截器。
 
-默认连接 `118.25.25.164:3306/demo`，用户名 `stu`，密码通过环境变量 `DB_PASSWORD` 提供（默认空）。数据库与已有 `user` 表须事先存在；应用启动时通过 `db/chat-schema.sql` 自动创建缺失的三张群聊表，不改写已有用户和消息。已有数据库迁移流程的环境可预先执行该 SQL，再设置 `chat.initialize-schema=false` 关闭自动建表。
+数据库连接通过环境变量配置：`DB_HOST`（默认 localhost）、`DB_PORT`（默认 3306）、`DB_NAME`（默认 demo）、`DB_USERNAME`、`DB_PASSWORD`；也可用 `SPRING_DATASOURCE_URL/USERNAME/PASSWORD` 覆盖。表结构由 Flyway 在 `db/migration/` 中统一版本化管理，启动时自动执行，不再依赖启动时散落执行的 SQL。
 
 当前连接信息配置在 `src/main/resources/application.yaml` 中。项目也会加载根目录的 `application-local.yaml`，该文件已加入 `.gitignore`，可用于设置本地 `spring.datasource` 覆盖配置。IDEA 运行配置的工作目录应设为项目根目录。
 
@@ -45,7 +45,7 @@ mvn spring-boot:run
 | GET | `/api/auth/me` | 无 | 200；当前用户 |
 | POST | `/api/auth/logout` | 无 | 204；注销当前 Token |
 
-除注册和登录外，`/api/**` 均要求在请求头中携带 `satoken: <tokenValue>`；未登录返回 401。前端将 Token 保存在当前浏览器标签页的 `sessionStorage`，关闭标签页后需重新登录。Sa-Token 通过 Redisson 将 token 与会话持久化到 Redis，服务重启后登录态依然保留，多实例部署可共享同一 Redis。改密或删除用户会撤销该用户的登录态。旧版单次 MD5 密码在成功登录后会升级到当前三次 MD5 格式。
+除注册和登录外，`/api/**` 均要求在请求头中携带 `satoken: <tokenValue>`；未登录返回 401。前端将 Token 保存在当前浏览器标签页的 `sessionStorage`，关闭标签页后需重新登录。Sa-Token 通过 Redisson 将 token 与会话持久化到 Redis，服务重启后登录态依然保留，多实例部署可共享同一 Redis。改密或删除用户会撤销该用户的登录态。旧版 MD5 密码在登录成功后会自动升级为 BCrypt。登录接口带 Redisson 限流，默认每账号每分钟 5 次，可用 `login.rate-limit-per-minute` 调整。
 
 ### Redisson + Redis 登录持久化
 
@@ -90,7 +90,7 @@ mvn spring-boot:run
 
 `name` 可空；`account` 必填且不能全为空白；新增时 `passwd` 必填且不能全为空白。所有字段最长 100 字符。修改时须提供 `account`，省略 `name` 会设为 NULL；`passwd` 省略、为 NULL 或全为空白时保留原密码，提供有效值时更新密码。
 
-密码接收明文，由后端按当前业务代码连续进行三次 UTF-8、小写 MD5 摘要计算；客户端不要提前进行 MD5。用户响应包含 `id`、`name`、`account`、`roleId`、`roleName`，不包含密码摘要。MD5 仅用于兼容本教学表的约定，正式密码存储应改用自适应密码哈希。
+密码接收明文，由后端使用 BCrypt 加盐哈希存储；旧数据中的单次/三次 MD5 会在登录成功后自动升级为 BCrypt。用户响应包含 `id`、`name`、`account`、`roleId`、`roleName`，不包含密码摘要。客户端不要提前哈希。
 
 列表返回 `{ "items": [], "page": 1, "pageSize": 20, "total": 0, "totalPages": 0 }`；页码从 1 开始，超出范围时 `items` 为空，`page` 保留请求页码，`totalPages` 表示实际总页数。详情、新增和修改返回用户对象；删除成功无响应体。页码小于 1、格式不正确等参数错误返回 400，用户不存在返回 404，账号重复返回 409，错误响应包含 `status` 和 `message`。
 

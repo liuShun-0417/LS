@@ -15,7 +15,7 @@ import org.springframework.validation.annotation.Validated;
 @Component
 @ConfigurationProperties(prefix = "ai")
 public class AiProperties {
-    @NotBlank private String baseUrl = "https://gpt.wenmeng.online/v1";
+    private String baseUrl = "";
     private String apiKey = "";
     @NotBlank private String model = "gpt-5.6-luna";
     @Min(256) @Max(128000) private int maxOutputTokens = 8192;

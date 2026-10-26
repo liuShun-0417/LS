@@ -3,6 +3,7 @@ package com.example.demo.system;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.example.demo.system.entity.User;
 import com.example.demo.system.mapper.UserMapper;
+import com.example.demo.system.auth.PasswordCodec;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -77,7 +78,8 @@ class UserApiIntegrationTests {
             assertEquals("/api/users/" + id, created.headers().firstValue("Location").orElseThrow());
             assertEquals("测试用户", user.get("name").asText());
             assertFalse(user.has("passwd"));
-            assertEquals("0dcd649d4ef5f787e39ddf48d8e625a5", password(id));
+            assertTrue(PasswordCodec.matches("hello", password(id)));
+            assertFalse(PasswordCodec.isLegacy(password(id)));
 
             var detail = request("GET", "/" + id, null);
             assertEquals(200, detail.statusCode());
@@ -99,23 +101,24 @@ class UserApiIntegrationTests {
                 var updated = request("PUT", "/" + id, Map.of("name", "更新用户", "account", account));
                 assertEquals(200, updated.statusCode(), updated.body());
                 assertEquals("更新用户", json.readTree(updated.body()).get("name").asText());
-                assertEquals("0dcd649d4ef5f787e39ddf48d8e625a5", password(id));
+                assertTrue(PasswordCodec.matches("hello", password(id)));
             }
             var clearedName = request("PUT", "/" + id, Map.of("account", account));
             assertEquals(200, clearedName.statusCode(), clearedName.body());
             assertTrue(json.readTree(clearedName.body()).get("name").isNull());
             assertNull(mapper.selectById(id).getName());
-            assertEquals("0dcd649d4ef5f787e39ddf48d8e625a5", password(id));
+            assertTrue(PasswordCodec.matches("hello", password(id)));
             assertEquals(200, request("PUT", "/" + id,
                     Map.of("name", "更新用户", "account", account, "passwd", "")).statusCode());
-            assertEquals("0dcd649d4ef5f787e39ddf48d8e625a5", password(id));
+            assertTrue(PasswordCodec.matches("hello", password(id)));
 
             // 含引号的文本必须作为参数保存，不能改变 SQL 语义。
             String quotedName = "O'Reilly 测试";
             var changedPassword = request("PUT", "/" + id,
                     Map.of("name", quotedName, "account", account, "passwd", "world"));
             assertEquals(200, changedPassword.statusCode(), changedPassword.body());
-            assertEquals("1283f82c7cffe9fa345c218314cb934a", password(id));
+            assertTrue(PasswordCodec.matches("world", password(id)));
+            assertFalse(PasswordCodec.matches("hello", password(id)));
             assertEquals(quotedName, mapper.selectById(id).getName());
 
             assertEquals(400, request("PUT", "/" + id, Map.of("account", " ")).statusCode());
@@ -186,7 +189,8 @@ class UserApiIntegrationTests {
             var login = authRequest("POST", "/login", Map.of("account", account, "passwd", "hello"), null);
             assertEquals(200, login.statusCode(), login.body());
             String legacyToken = json.readTree(login.body()).get("tokenValue").asText();
-            assertEquals("0dcd649d4ef5f787e39ddf48d8e625a5", mapper.selectById(legacy.getId()).getPasswd());
+            assertTrue(PasswordCodec.matches("hello", mapper.selectById(legacy.getId()).getPasswd()));
+            assertFalse(PasswordCodec.isLegacy(mapper.selectById(legacy.getId()).getPasswd()));
             assertEquals(200, authRequest("GET", "/me", null, legacyToken).statusCode());
 
             assertEquals(200, request("PUT", "/" + legacy.getId(), Map.of(
