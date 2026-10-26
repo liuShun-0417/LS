@@ -1,0 +1,32 @@
+@import url('/users.css');
+select, textarea { font: inherit; }
+.nav-group { color:#8098ba; font-size:11px; padding:18px 16px 5px; }
+.topbar-caption { font-size:12px; letter-spacing:0; color:#61748e; }
+.toolbar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+.toolbar input,.toolbar select,.form-fields select,.form-fields textarea { border:1px solid #dfe6f0; border-radius:7px; padding:10px 12px; background:white; color:#26364b; min-width:0; }
+.toolbar input { width:240px; max-width:100%; }
+.form-fields select,.form-fields textarea { width:100%; font-size:13px; }
+.form-fields textarea { min-height:75px; resize:vertical; }
+.table-scroll table { table-layout:auto; min-width:740px; }
+.table-scroll th { width:auto; white-space:nowrap; }
+.table-scroll td { max-width:260px; overflow-wrap:anywhere; }
+.table-scroll th,.table-scroll td { padding-left:20px; padding-right:20px; }
+.row-actions { white-space:nowrap; }
+.badge { display:inline-block; font-size:11px; padding:4px 8px; border-radius:5px; background:#eef3fc; color:#4e70a7; white-space:nowrap; }
+.badge.on { background:#e9f6ef; color:#308362; }
+.badge.off { background:#f3f3f3; color:#8994a3; }
+.small { display:block; color:#8b98a9; font-size:11px; margin-top:5px; }
+.dialog { width:min(530px,calc(100vw - 32px)); }
+.permission-tree { max-height:48vh; overflow:auto; margin-top:15px; border:1px solid #e7ebf2; border-radius:8px; padding:10px; }
+.permission-tree label { display:flex; align-items:center; gap:8px; min-height:38px; font-size:13px; }
+.permission-tree input { width:16px; height:16px; accent-color:#376dce; }
+.permission-tree .permission-code { color:#8794a6; font-size:11px; }
+.tree-toggle { border:0; background:transparent; color:#61748e; width:24px; }
+.form-fields input:disabled,.form-fields select:disabled { background:#f3f5f9; color:#7c8da4; }
+.loading { padding:40px; text-align:center; color:#8995a6; }
+.muted { color:#8b98a9; }
+@media(max-width:700px) { .nav-links { flex-wrap:wrap; } .nav-group { display:none; } }
+@media(max-width:650px) { .content { padding:25px 15px; } .page-heading { gap:12px; } .panel-head { align-items:stretch; flex-direction:column; padding:18px; } .toolbar input { flex:1; width:120px; } .dialog-content { padding:22px; } .permission-code { display:none; } .topbar { padding:0 15px; } }
+.menu-summary { display:flex; gap:30px; margin-bottom:22px; color:#8590a4; font-size:13px; }
+.menu-summary b { margin-left:9px; color:#34415a; font-size:20px; }
+.badge.warn { background:#fdf3e3; color:#b7791f; }

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>群组聊天 · Demo</title>
+    <link rel="stylesheet" href="/chat.css">
+    <script src="/auth.js" defer></script>
+    <script src="/access.js" defer></script>
+    <script src="/chat.js" defer></script>
+</head>
+<body data-permission="chat:access">
+<header class="topbar">
+    <a class="brand" href="/chat.html">Demo <span>群组聊天</span></a>
+    <nav><span data-navigation></span><span id="current-user"></span><button id="logout" type="button">退出登录</button></nav>
+</header>
+<main>
+    <aside>
+        <div class="section-title"><h1>群组</h1><button id="refresh" type="button">刷新</button></div>
+        <form id="create-group">
+            <label for="group-name">创建新群组</label>
+            <div class="create-row"><input id="group-name" maxlength="100" placeholder="输入群组名称" required><button id="create" type="submit">创建</button></div>
+        </form>
+        <p class="hint">选择群组加入，与群内成员实时交流。</p>
+        <div id="groups" aria-label="群组列表"></div>
+    </aside>
+    <section class="conversation" aria-labelledby="group-title">
+        <div class="conversation-head"><div><h2 id="group-title">选择一个群组</h2><p id="group-info">创建或加入群组，开始聊天</p></div><span id="connection" role="status">正在连接</span></div>
+        <p id="error" role="alert" hidden></p>
+        <div id="messages" role="log" aria-label="聊天消息"><p class="empty">加入群组后，消息会显示在这里</p></div>
+        <form id="send-message">
+            <label class="hint" for="content">消息 · 最多 2000 字符</label>
+            <textarea id="content" rows="3" maxlength="2000" placeholder="输入消息，Enter 发送，Shift + Enter 换行" disabled required></textarea>
+            <div class="compose-footer"><span id="send-status" role="status">入群时可查看此前最近 30 条消息</span><button id="send" type="submit" disabled>发送消息</button></div>
+        </form>
+    </section>
+</main>
+</body>
+</html>

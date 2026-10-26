@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>用户管理 · Demo</title>
+<link rel="stylesheet" href="/admin.css"><script src="/auth.js" defer></script><script src="/access.js" defer></script><script src="/admin.js" defer></script></head>
+<body data-page="users" data-permission="user:read">
+<div class="app-shell"><aside class="sidebar" aria-label="主导航">
+<a class="brand" href="/chat.html"><span class="brand-mark">D</span><span>Demo <small>控制台</small></span></a>
+<div class="sidebar-label">工作空间</div><nav class="nav-links" data-navigation aria-label="功能页面"></nav>
+<div class="sidebar-foot">统一身份与权限管理</div></aside>
+<div class="workspace"><header class="topbar"><span class="crumb">系统管理 <span>/</span> 用户管理</span><div class="session-info"><span id="current-account" class="topbar-caption"></span><button id="logout-button" class="logout-button" type="button">退出登录</button></div></header>
+<main class="content"><div class="page-heading"><div><p class="eyebrow">SYSTEM / USERS</p><h1>用户管理</h1><p class="page-description">管理账号资料，为每位用户绑定一个角色。</p></div><button class="button button-primary" id="add-record" type="button" hidden>＋ 新增用户</button></div>
+<section class="panel"><div class="panel-head"><div><h2>用户列表 <span class="count-badge" id="record-count">0</span></h2><p id="list-caption">正在加载数据</p></div>
+<form id="search-form" class="toolbar"><input id="search" type="search" aria-label="搜索用户" placeholder="输入名称或账号"><button class="button button-subtle" type="submit">搜索</button><button class="button button-subtle" id="refresh" type="button" aria-label="刷新列表">↻ 刷新</button></form></div>
+<div id="list-state" class="list-state" role="status" hidden><h3 id="state-title"></h3><p id="state-description"></p><button id="retry" class="button button-outline" type="button">重试</button></div>
+<div id="table-area"><div class="table-scroll"><table><thead id="table-head"></thead><tbody id="rows"></tbody></table></div><footer class="pagination"><span id="page-summary" class="page-summary"></span><div id="page-controls" class="page-controls"><button id="previous-page" class="page-button" aria-label="上一页">‹</button><span id="page-indicator" class="page-indicator"></span><button id="next-page" class="page-button" aria-label="下一页">›</button></div></footer></div></section>
+<p class="content-foot">角色及权限修改后即时生效 · 列表展示真实数据库记录</p></main></div></div>
+<dialog id="editor" class="dialog" aria-labelledby="editor-title"><form id="editor-form" class="dialog-content"><div class="dialog-head"><h2 id="editor-title"></h2><button class="icon-button" data-close="editor" type="button" aria-label="关闭">×</button></div><p id="editor-description" class="dialog-description"></p><div id="fields" class="form-fields"></div><p id="form-error" class="form-error" role="alert" hidden></p><div class="dialog-actions"><button class="button button-outline" data-close="editor" type="button">取消</button><button class="button button-primary" id="save" type="submit">保存</button></div></form></dialog>
+<dialog id="confirm" class="dialog confirm-dialog" aria-labelledby="confirm-title"><form id="confirm-form" class="dialog-content"><div class="danger-icon">!</div><h2 id="confirm-title">确认删除？</h2><p id="confirm-description" class="dialog-description"></p><p id="confirm-error" class="form-error" role="alert" hidden></p><div class="dialog-actions"><button class="button button-outline" data-close="confirm" type="button">取消</button><button class="button button-danger" type="submit">确认删除</button></div></form></dialog>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body></html>

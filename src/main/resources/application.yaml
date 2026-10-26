@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: demo
+  config:
+    import: optional:file:./application-local.yaml
+  datasource:
+    url: jdbc:mysql://118.25.25.164:3306/demo?allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=UTF-8&connectionTimeZone=Asia/Shanghai&connectTimeout=5000&socketTimeout=10000
+    username: stu
+    password: ${DB_PASSWORD:}
+server:
+  port: 8080
+sa-token:
+  token-name: satoken
+  timeout: 86400
+  is-share: false
+  is-read-cookie: false
+  is-read-header: true
+  is-read-body: false
+  is-read-param: false
+
+ai:
+  base-url: ${AI_BASE_URL:https://gpt.wenmeng.online/v1}
+  api-key: ${AI_API_KEY:}
+  model: ${AI_MODEL:gpt-5.6-luna}
+  max-output-tokens: ${AI_MAX_OUTPUT_TOKENS:8192}
+  timeout-seconds: ${AI_TIMEOUT_SECONDS:180}

@@ -1,0 +1,58 @@
+:root { color-scheme: light; font-family: "Microsoft YaHei", system-ui, sans-serif; color: #233047; background: #f4f6fa; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+button, input, textarea { font: inherit; }
+button { border: 1px solid #d6dfeb; border-radius: 7px; padding: 8px 14px; color: #263c60; background: white; cursor: pointer; }
+button:hover { background: #edf3ff; }
+button:disabled { opacity: .5; cursor: not-allowed; }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid #9dbfff; outline-offset: 2px; }
+a { color: #315fc5; text-decoration: none; }
+.topbar { height: 72px; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; background: white; border-bottom: 1px solid #e2e8f0; }
+.brand { font-size: 23px; font-weight: 700; color: #244fc6; }
+.brand span { font-size: 16px; color: #46556c; margin-left: 12px; }
+nav { display: flex; gap: 20px; align-items: center; font-size: 14px; }
+[data-navigation] { display:flex; flex-wrap:wrap; gap:12px; }
+@media(max-width:700px) { .topbar { height:auto; min-height:72px; padding:14px; flex-wrap:wrap; gap:12px; } nav { flex-wrap:wrap; gap:12px; } }
+main { max-width: 1400px; margin: 24px auto; padding: 0 24px; display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 20px; height: calc(100dvh - 120px); min-height: 500px; }
+aside, .conversation { background: white; border: 1px solid #e0e6ef; border-radius: 12px; overflow: hidden; }
+aside { display: flex; flex-direction: column; padding: 20px; }
+.section-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+h1, h2 { margin: 0; font-size: 20px; }
+#create-group label { font-size: 13px; }
+.create-row { display: flex; gap: 8px; margin-top: 8px; }
+input, textarea { border: 1px solid #d6dfeb; border-radius: 7px; padding: 10px; width: 100%; min-width: 0; background: #fff; }
+.create-row button, #send { white-space: nowrap; background: #315fc5; color: white; border-color: #315fc5; }
+.hint { font-size: 12px; color: #65738a; line-height: 1.7; }
+#groups { overflow-y: auto; margin: 5px -8px 0; }
+.group { width: 100%; text-align: left; border: 1px solid transparent; padding: 14px 12px; display: block; margin-bottom: 6px; }
+.group strong { display: block; overflow-wrap: anywhere; }
+.group small { display: block; color: #6d7c91; margin-top: 7px; }
+.group.active { background: #edf3ff; border-color: #a7bff1; }
+.conversation { display: flex; flex-direction: column; }
+.conversation-head { padding: 20px 24px; border-bottom: 1px solid #e7ebf2; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.conversation-head h2 { overflow-wrap: anywhere; }
+#group-info { font-size: 12px; color: #65738a; margin: 7px 0 0; }
+#connection { font-size: 12px; white-space: nowrap; color: #65738a; }
+#messages { flex: 1; min-height: 100px; padding: 24px; overflow-y: auto; background: #fafbfe; }
+.empty { text-align: center; color: #768298; margin-top: 60px; font-size: 14px; }
+.message { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 20px; }
+.message.own { align-items: flex-end; }
+.message .meta { font-size: 11px; color: #728096; margin-bottom: 6px; }
+.message .bubble { max-width: 85%; border: 1px solid #e1e7f0; border-radius: 10px; padding: 11px 15px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; line-height: 1.7; background: white; }
+.message.own .bubble { background: #eaf1ff; border-color: #d4e2ff; }
+.delivery-state { color: #728096; font-size: 11px; margin-top: 5px; }
+.retry-message { padding: 3px 9px; margin-top: 5px; font-size: 12px; color: #ab3333; }
+#send-message { border-top: 1px solid #e7ebf2; padding: 16px 24px; }
+textarea { resize: vertical; min-height: 70px; max-height: 200px; margin-top: 6px; }
+.compose-footer { margin-top: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+#send-status { font-size: 12px; color: #65738a; }
+#error { margin: 0; padding: 12px 24px; background: #fff0f0; color: #ab3333; font-size: 13px; }
+@media(max-width: 760px) {
+    .topbar { height: auto; min-height: 70px; padding: 12px 16px; flex-wrap: wrap; gap: 14px; }
+    nav { gap: 12px; }
+    main { display: flex; flex-direction: column; height: auto; padding: 0 12px; margin: 12px 0; }
+    aside { max-height: 320px; flex-shrink: 0; }
+    .conversation { height: 72dvh; min-height: 480px; }
+    .conversation-head, #messages { padding: 16px; }
+    #send-message { padding: 12px 16px; }
+}

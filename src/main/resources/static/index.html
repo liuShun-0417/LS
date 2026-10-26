@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>消息对话 · Demo</title>
+    <link rel="stylesheet" href="/messages.css">
+    <script src="/auth.js" defer></script>
+    <script src="/access.js" defer></script>
+    <script src="/messages.js" defer></script>
+</head>
+<body data-permission="message:access">
+<header class="topbar">
+    <a class="brand" href="/">Demo <span>消息对话</span></a>
+    <nav aria-label="主导航"><span data-navigation></span><button id="logout" class="quiet" type="button">退出登录</button></nav>
+</header>
+<main>
+    <section class="conversation" aria-labelledby="conversation-title">
+        <header class="conversation-head">
+            <div><p class="eyebrow">GPT-5.6 Luna · AI 助手</p><h1 id="conversation-title">消息对话</h1><p class="subtitle">随时提问，和 AI 一起思考、学习与创作。</p></div>
+            <button id="clear-button" class="quiet" type="button">清空对话</button>
+        </header>
+        <div id="messages" class="messages" role="log" aria-label="对话记录" aria-live="off">
+            <div id="empty-state" class="empty-state"><span class="robot" aria-hidden="true">✦</span><h2>今天想聊些什么？</h2><p>解释一个概念、整理学习思路，或一起解决问题。你可以接着上一条回复继续提问。</p><p class="hint">携带最近 20 轮已完成对话，较长内容会缩短上下文。刷新或清空后重新开始。</p></div>
+        </div>
+        <form id="message-form">
+            <div class="compose-heading"><label for="message-input">消息内容</label><label class="effort-label" for="effort">思考强度 <select id="effort"><option value="low">低</option><option value="medium" selected>中</option><option value="high">高</option><option value="xhigh">更高</option><option value="max">最高</option></select></label></div>
+            <textarea id="message-input" rows="3" maxlength="2000" placeholder="输入消息，Enter 发送，Shift + Enter 换行" required></textarea>
+            <div class="compose-footer"><span id="status" role="status">准备就绪</span><div class="compose-actions"><span id="counter">0 / 2000</span><button id="stop-button" class="quiet" type="button" hidden>停止生成</button><button id="send-button" type="submit" disabled>发送消息</button></div></div>
+        </form>
+    </section>
+</main>
+</body>
+</html>
