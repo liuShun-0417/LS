@@ -45,7 +45,18 @@ mvn spring-boot:run
 | GET | `/api/auth/me` | 无 | 200；当前用户 |
 | POST | `/api/auth/logout` | 无 | 204；注销当前 Token |
 
-除注册和登录外，`/api/**` 均要求在请求头中携带 `satoken: <tokenValue>`；未登录返回 401。前端将 Token 保存在当前浏览器标签页的 `sessionStorage`，关闭标签页后需重新登录。Sa-Token 当前使用单进程内存存储，服务重启会清除登录态；多实例部署应配置共享存储。改密或删除用户会撤销该用户的登录态。旧版单次 MD5 密码在成功登录后会升级到当前三次 MD5 格式。
+除注册和登录外，`/api/**` 均要求在请求头中携带 `satoken: <tokenValue>`；未登录返回 401。前端将 Token 保存在当前浏览器标签页的 `sessionStorage`，关闭标签页后需重新登录。Sa-Token 通过 Redisson 将 token 与会话持久化到 Redis，服务重启后登录态依然保留，多实例部署可共享同一 Redis。改密或删除用户会撤销该用户的登录态。旧版单次 MD5 密码在成功登录后会升级到当前三次 MD5 格式。
+
+### Redisson + Redis 登录持久化
+
+登录 token 与会话数据通过 Redisson 写入 Redis，不再依赖进程内存。服务重启后，Redis 中未过期的 token 依然有效，前端无需重新登录。
+
+- 依赖：`org.redisson:redisson` + `cn.dev33:sa-token-redisson`（`SaTokenDaoForRedisson`）。
+- 配置：`src/main/resources/application.yaml` 中的 `redisson.*`，或环境变量 `REDIS_ADDRESS`、`REDIS_PASSWORD`、`REDIS_DATABASE`。
+- 默认连接 `redis://127.0.0.1:6379`（db 0，无密码）。
+- Redis 键：`satoken:login:token:<tokenValue>`（值为 userId，TTL 约 24 小时）、`satoken:login:session:<userId>`（用户会话）。
+- 要求 Redis 6.0+（Redisson 使用了 `SET ... KEEPTTL`）。
+- 代码位置：`src/main/java/com/example/demo/system/config/RedissonConfig.java`。
 
 已实现 RBAC：每位用户绑定一个角色，角色关联菜单和按钮权限，管理接口独立鉴权。新注册及迁移前用户默认绑定普通用户角色，仅能使用消息演示与群聊。首次使用请通过 `RBAC_BOOTSTRAP_ADMIN_ACCOUNT` 或 `rbac.bootstrap-admin-account` 指定一个已有账号作为超级管理员。完整初始化方式、数据模型、接口与权限边界见 [RBAC 文档](docs/rbac.md)。
 
