@@ -98,11 +98,11 @@ try { mvn test } finally { Remove-Item Env:\RUN_MYSQL_INTEGRATION_TESTS }
 
 进入 work-admin/，准备 Node.js 与 npm（或 pnpm）：
 
-`ash
+```bash
 cd work-admin
 npm install
 npm run serve      # 开发模式，默认 http://localhost:8080
 npm run build      # 生产构建，产物在 dist/
-`
+```
 
 前端通过代理访问后端 /api（见 work-admin/vue.config.js），主要页面包括登录、注册、工作台、消息、群聊、用户管理、角色与菜单权限管理。
