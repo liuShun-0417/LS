@@ -2,7 +2,7 @@
 
 本仓库整合了两个来源，作为 liuShun-0417/LS 的完整升级版：
 
-- 后端：整合自 L_fly_J/stu（Spring Boot + MyBatis-Plus + MySQL + Sa-Token + WebSocket + SSE + AI），位于仓库根目录。
+- 后端：整合自 L_fly_J/stu（Spring Boot 4 + MyBatis-Plus + MySQL + Sa-Token + Redisson/Redis + WebSocket + SSE + AI），位于仓库根目录。
 - 前端：整合自 L_fly_J/work-admin（Vue 3 + Element Plus + Vuex + Vue Router），位于 work-admin/。
 
 后端功能与接口说明见下方；前端启动方式见文末「前端 work-admin」。
@@ -18,7 +18,7 @@
 
 项目使用 MyBatis-Plus 3.5.17（Spring Boot 4 Starter、分页插件）和 MySQL Connector/J，数据库操作通过 `UserMapper` 完成，无需手写 JDBC 查询。`system/entity/User.java` 对应 `user` 表，`system/config/MybatisPlusConfig.java` 配置每页 20 条所需的分页拦截器。
 
-默认连接 `192.168.8.142:3306/demo`，用户名为 `root`。数据库与已有 `user` 表须事先存在；应用启动时通过 `db/chat-schema.sql` 自动创建缺失的三张群聊表，不改写已有用户和消息。已有数据库迁移流程的环境可预先执行该 SQL，再设置 `chat.initialize-schema=false` 关闭自动建表。
+默认连接 `118.25.25.164:3306/demo`，用户名 `stu`，密码通过环境变量 `DB_PASSWORD` 提供（默认空）。数据库与已有 `user` 表须事先存在；应用启动时通过 `db/chat-schema.sql` 自动创建缺失的三张群聊表，不改写已有用户和消息。已有数据库迁移流程的环境可预先执行该 SQL，再设置 `chat.initialize-schema=false` 关闭自动建表。
 
 当前连接信息配置在 `src/main/resources/application.yaml` 中。项目也会加载根目录的 `application-local.yaml`，该文件已加入 `.gitignore`，可用于设置本地 `spring.datasource` 覆盖配置。IDEA 运行配置的工作目录应设为项目根目录。
 
