@@ -32,3 +32,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### 临时备份文件
+*.bak
+
